@@ -16,6 +16,8 @@
   image: fureasu346/pipeline-util:v1
   variables:
     KEY_NAMES: "ovpn-${CI_JOB_ID}"
+    OVPN_LOCAL_DNS: "false"
+    OVPN_SPLIT_TUNNEL: "false"
   script:
     - echo "Creating keys/ovpn"
     - mkdir -p ${CI_PROJECT_DIR}/keys/ovpn
@@ -25,7 +27,7 @@
     - |
       for KEY in "${KEYS[@]}"; do
         echo "Generating key for $KEY"
-        ssh instance "KEY_NAME=$KEY bash get-ovpn-key.sh"
+        ssh instance "KEY_NAME=$KEY OVPN_SPLIT_TUNNEL=$OVPN_SPLIT_TUNNEL OVPN_LOCAL_DNS=$OVPN_LOCAL_DNS bash get-ovpn-key.sh"
         echo "Getting the key file from remote instance"
         scp instance:~/keys/ovpn/$KEY.ovpn ${CI_PROJECT_DIR}/keys/ovpn/$KEY.ovpn
       done
