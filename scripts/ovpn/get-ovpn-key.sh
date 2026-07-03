@@ -16,14 +16,14 @@ sudo bash ${INSTALL_FILE} client add ${KEY_NAME} > /dev/null
 KEY_FILE="$HOME/${KEY_NAME}.ovpn"
 
 if [ "$OVPN_SPLIT_TUNNEL" = "true" ]; then
-    echo "OVPN_SPLIT_TUNNEL is set to true, adding split tunnel config to client file"
+    echo "==> [CONFIG] OVPN_SPLIT_TUNNEL is set to true, adding split tunnel config to client file"
     echo "route 10.0.0.0 255.0.0.0 net_gateway" >> "${KEY_FILE}"
     echo "route 172.16.0.0 255.240.0.0 net_gateway" >> "${KEY_FILE}"
     echo "route 192.168.0.0 255.255.0.0 net_gateway" >> "${KEY_FILE}"
 fi
 
 if [ "$OVPN_LOCAL_DNS" = "true" ]; then
-    echo "OVPN_LOCAL_DNS is set to true, adding local dns config to client file"
+    echo "==> [CONFIG] OVPN_LOCAL_DNS is set to true, adding local dns config to client file"
     echo 'pull-filter ignore "dhcp-option DNS"' >> ${KEY_FILE}
 fi
 
