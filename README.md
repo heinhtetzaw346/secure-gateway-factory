@@ -22,11 +22,72 @@ Custom container images are used for the pipeline jobs.
 ## Pipeline Flow
 
 - Provision cloud compute instances
-- Install secure gateway Servers 
+- Prepare instances (install shared tools)
+- Install secure gateway servers
 - Generate keys for secure gateway servers
 - Tear down cloud compute instances
 
 Gitlab CI's Input variables are utilized to provide drop down list of options to select for `cloud-provider`, `region`, `instance-type` choices. Pipeline jobs are generated according to the cloud-provider input while the other variables can be modified at runtime through job variables.
+
+## Configuration Variables
+
+Non-secret variables that can be modified at runtime through pipeline or job variables.
+
+### Pipeline Inputs
+
+These are selected when triggering the pipeline via the Gitlab CI dropdown UI.
+
+|Variable|Default|Description|
+|---|---|---|
+|`cloud-provider`|`aws`|Cloud provider to use (`aws`, `gcp`, `do`)|
+|`region`|Provider-specific|Regional deployment target|
+|`instance-type`|Provider-specific|VPN server instance type|
+
+### Provider Variables
+
+Passed as OpenTofu variables per provider. These have defaults in the tofu configs and can be overridden through CI/CD variables.
+
+|Variable|Provider|Default|Description|
+|---|---|---|---|
+|`AWS_VPC_CIDR`|AWS|`10.255.255.0/24`|CIDR block for the VPN VPC|
+|`GCP_NETWORK_TIER`|GCP|`STANDARD`|Network tier for the GCP instance|
+|`DO_IMPORT_SSH_KEY`|DO|`true`|Whether to import the SSH key into DigitalOcean|
+
+### SSH User Variables
+
+Defined globally in `.gitlab-ci.yml` and used by jobs that SSH into provisioned instances.
+
+|Variable|Default|Description|
+|---|---|---|
+|`AWS_SSH_USER`|`ubuntu`|SSH user for AWS instances|
+|`GCP_SSH_USER`|`vpnadmin`|SSH user for GCP instances|
+|`DO_SSH_USER`|`root`|SSH user for DigitalOcean instances|
+
+### OpenVPN Key Options
+
+Configurable when generating OpenVPN client keys in the `ovpn-key-generate` job.
+
+|Variable|Default|Description|
+|---|---|---|
+|`KEY_NAMES`|`ovpn-${CI_JOB_ID}`|Comma-separated list of client key names to generate|
+|`OVPN_SPLIT_TUNNEL`|`false`|When `true`, adds routes to bypass the VPN for private network ranges (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16)|
+|`OVPN_LOCAL_DNS`|`false`|When `true`, ignores DNS options pushed by the server, allowing clients to use their local DNS|
+
+### Outline Key Options
+
+Configurable when generating Outline client keys in the `outline-key-generate` job.
+
+|Variable|Default|Description|
+|---|---|---|
+|`KEY_NAMES`|`outline-${CI_JOB_ID}`|Comma-separated list of access key names to generate|
+
+### Shared Tools
+
+Configurable in the `install-tools` prepare job.
+
+|Variable|Default|Description|
+|---|---|---|
+|`INSTALL_TOOLS`|`true`|Whether to install shared tools (e.g. vnstat) on the instance|
 
 ## Implemented Cloud Providers
 
