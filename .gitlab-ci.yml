@@ -66,11 +66,11 @@ variables:
 include:
   - local: 'pipeline/providers/aws.yaml'
     rules:
-      - if $[[ inputs.cloud-provider ]] == "aws"
+      - if $PROVIDER == "aws"
   - local: 'pipeline/providers/gcp.yaml'
     rules:
-      - if $[[ inputs.cloud-provider ]] == "gcp"
+      - if $PROVIDER == "gcp"
   - local: 'pipeline/providers/do.yaml'
     rules:
-      - if $[[ inputs.cloud-provider ]] == "do"
+      - if $PROVIDER == "do"
   - local: 'pipeline/templates/*.yaml'
