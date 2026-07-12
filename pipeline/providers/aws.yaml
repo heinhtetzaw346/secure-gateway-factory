@@ -24,7 +24,7 @@ aws-prepare:
   needs:
     - job: aws-provision
       artifacts: true
-      optional: false
+      optional: true
   extends:
     - .remote-access-template
     - .install-tools-template
