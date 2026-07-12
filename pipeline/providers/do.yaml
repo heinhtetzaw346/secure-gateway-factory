@@ -1,3 +1,6 @@
+variables:
+  SSH_USER: $DO_SSH_USER
+
 .do-rules: &do-rules
   rules:
   - if: '$PROVIDER == "do" && ($CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "api")'
@@ -64,8 +67,6 @@ do-ovpn-install:
   extends:
     - .ovpn-install-template
     - .remote-access-template
-  variables:
-    SSH_USER: $DO_SSH_USER
 
 do-ovpn-key-generate:
   needs:

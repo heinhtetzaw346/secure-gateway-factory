@@ -1,3 +1,6 @@
+variables:
+  SSH_USER: $GCP_SSH_USER
+
 .gcp-rules: &gcp-rules
   rules:
   - if: '$PROVIDER == "gcp" && ($CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "api")'
@@ -64,8 +67,6 @@ gcp-ovpn-install:
   extends:
     - .ovpn-install-template
     - .remote-access-template
-  variables:
-    SSH_USER: $GCP_SSH_USER
 
 gcp-ovpn-key-generate:
   needs:

@@ -1,4 +1,10 @@
+.shared-rules: &shared-rules
+  rules:
+  - if: '($PROVIDER != null) && ($CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "api")'
+    when: manual
+
 prepare:
+  <<: *shared-rules
   when: on_success
   needs:
     - job: aws-provision

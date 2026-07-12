@@ -1,3 +1,6 @@
+variables:
+  SSH_USER: $AWS_SSH_USER
+
 .aws-rules: &aws-rules
   rules:
   - if: '$PROVIDER == "aws" && ($CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "api")'
@@ -64,8 +67,6 @@ aws-ovpn-install:
   extends:
     - .ovpn-install-template
     - .remote-access-template
-  variables:
-    SSH_USER: $AWS_SSH_USER
 
 aws-ovpn-key-generate:
   needs:
@@ -79,5 +80,3 @@ aws-ovpn-key-generate:
   extends:
     - .ovpn-key-template
     - .remote-access-template
-  variables:
-    SSH_USER: $AWS_SSH_USER

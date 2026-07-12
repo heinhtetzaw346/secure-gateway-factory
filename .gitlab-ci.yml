@@ -64,5 +64,13 @@ variables:
   ENVIRONMENT_NAME: $[[ inputs.cloud-provider ]]-$[[ inputs.region ]]-${CI_PIPELINE_IID}
 
 include:
-  - local: 'pipeline/providers/*.yaml'
+  - local: 'pipeline/providers/aws.yaml'
+    rules:
+      - if $[[ inputs.cloud-provider ]] == 'aws'
+  - local: 'pipeline/providers/gcp.yaml'
+    rules:
+      - if $[[ inputs.cloud-provider ]] == 'gcp'
+  - local: 'pipeline/providers/do.yaml'
+    rules:
+      - if $[[ inputs.cloud-provider ]] == 'do'
   - local: 'pipeline/templates/*.yaml'
