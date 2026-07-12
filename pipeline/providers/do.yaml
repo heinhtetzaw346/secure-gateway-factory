@@ -19,16 +19,6 @@ do-provision:
     - .prepare-tofu-template
     - .provision-tofu-template
 
-do-prepare:
-  when: on_success
-  needs:
-    - job: do-provision
-      artifacts: true
-      optional: true
-  extends:
-    - .remote-access-template
-    - .install-tools-template
-
 do-tear-down:
   needs:
     - job: do-provision

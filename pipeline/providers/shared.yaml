@@ -1,0 +1,15 @@
+prepare:
+  when: on_success
+  needs:
+    - job: aws-provision
+      artifacts: true
+      optional: true
+    - job: gcp-provision
+      artifacts: true
+      optional: true
+    - job: do-provision
+      artifacts: true
+      optional: true
+  extends:
+    - .remote-access-template
+    - .install-tools-template

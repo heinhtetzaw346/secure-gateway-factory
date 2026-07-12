@@ -19,16 +19,6 @@ gcp-provision:
     - .prepare-tofu-template
     - .provision-tofu-template
 
-gcp-prepare:
-  when: on_success
-  needs:
-    - job: gcp-provision
-      artifacts: true
-      optional: true
-  extends:
-    - .remote-access-template
-    - .install-tools-template
-
 gcp-tear-down:
   needs:
     - job: gcp-provision
