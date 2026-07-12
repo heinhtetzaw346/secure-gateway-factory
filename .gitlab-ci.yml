@@ -49,6 +49,7 @@ spec:
 ---
 stages:
   - provision
+  - prepare
   - install
   - generate
   - destroy

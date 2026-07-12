@@ -19,6 +19,17 @@ aws-provision:
     - .prepare-tofu-template
     - .provision-tofu-template
 
+aws-prepare:
+  <<: *aws-rules
+  needs:
+    - job: aws-provision
+      artifacts: true
+      optional: false
+  when: on_success
+  extends:
+    - .remote-access-template
+    - .install-tools-template
+
 aws-tear-down:
   needs:
     - job: aws-provision

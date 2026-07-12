@@ -1,0 +1,10 @@
+.install-tools-template:
+  stage: prepare
+  variables:
+    INSTALL_TOOLS: true
+  script:
+    - echo "Sending script to remote instance"
+    - scp scripts/shared/install-tools.sh instance:.
+    - ssh instance "INSTALL_TOOLS=${INSTALL_TOOLS} bash install-tools.sh"
+    - echo "Cleaning script file from remote instance"
+    - ssh instance "rm install-tools.sh"
