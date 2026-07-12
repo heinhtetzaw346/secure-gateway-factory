@@ -20,12 +20,11 @@ do-provision:
     - .provision-tofu-template
 
 do-prepare:
-  <<: *do-rules
+  when: on_success
   needs:
     - job: do-provision
       artifacts: true
       optional: false
-  when: on_success
   extends:
     - .remote-access-template
     - .install-tools-template

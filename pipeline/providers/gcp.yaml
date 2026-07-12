@@ -20,12 +20,11 @@ gcp-provision:
     - .provision-tofu-template
 
 gcp-prepare:
-  <<: *gcp-rules
+  when: on_success
   needs:
     - job: gcp-provision
       artifacts: true
       optional: false
-  when: on_success
   extends:
     - .remote-access-template
     - .install-tools-template
