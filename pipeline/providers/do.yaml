@@ -1,6 +1,3 @@
-variables:
-  SSH_USER: $DO_SSH_USER
-
 .do-rules: &do-rules
   rules:
   - if: '$PROVIDER == "do" && ($CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "api")'
@@ -35,6 +32,20 @@ do-tear-down:
     - .prepare-tofu-template
     - .destroy-tofu-template
 
+do-install-tools:
+  needs:
+    - job: do-provision
+      artifacts: true
+      optional: false
+  rules:
+    - if: '$PROVIDER == "do" && ($CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "api")'
+      when: on_success
+  extends:
+    - .install-tools-template
+    - .remote-access-template
+  variables:
+    SSH_USER: $DO_SSH_USER
+
 do-outline-install:
   needs:
     - job: do-provision
@@ -67,6 +78,8 @@ do-ovpn-install:
   extends:
     - .ovpn-install-template
     - .remote-access-template
+  variables:
+    SSH_USER: $DO_SSH_USER
 
 do-ovpn-key-generate:
   needs:
