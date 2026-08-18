@@ -7,11 +7,17 @@
     - export TF_VAR_gl_user="$CI_USER"
     - export TF_VAR_gl_pat="$CI_PAT"
     - diff="${PROVIDER^^}"
+    - diff="${diff//-/_}"
     - |
       for VAR in "${VARS[@]}"; do
         if [ -n "${!VAR+x}" ]; then
           echo "$VAR is set"
           tfvar="${VAR#${diff}_}"
+          tfvar="${tfvar#AWS_EC2_}"
+          tfvar="${tfvar#AWS_LIGHTSAIL_}"
+          tfvar="${tfvar#AWS_}"
+          tfvar="${tfvar#GCP_}"
+          tfvar="${tfvar#DO_}"
           tfvar_lc="${tfvar,,}"
           export TF_VAR_${tfvar_lc}="${!VAR}"
         else

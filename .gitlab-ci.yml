@@ -2,13 +2,13 @@ spec:
   inputs:
     cloud-provider:
       type: string
-      default: 'aws'
+      default: 'aws-ec2'
       description: "Cloud provider for VPN"
-      options: ['aws', 'gcp', 'do']
+      options: ['aws-ec2', 'aws-lightsail', 'gcp', 'do']
     region:
       description: "Regional deployment target"
       rules:
-        - if: $[[ inputs.cloud-provider ]] == 'aws'
+        - if: $[[ inputs.cloud-provider ]] == 'aws-ec2'
           default: 'ap-southeast-1'
           options: [
             'us-east-1', 'us-east-2', 'us-west-1', 'us-west-2', 'af-south-1', 'ap-east-1', 'ap-east-2', 
@@ -18,6 +18,14 @@ spec:
             'eu-west-2', 'eu-west-3', 'eu-south-1', 'eu-south-2', 'eu-north-1', 'il-central-1', 'me-south-1', 
             'me-south-2', 'me-central-1', 'mx-central-1', 'sa-east-1', 'us-gov-east-1', 'us-gov-west-1', 
             'cn-north-1', 'cn-northwest-1'
+          ]
+        - if: $[[ inputs.cloud-provider ]] == 'aws-lightsail'
+          default: 'ap-southeast-1'
+          options: [
+            'us-east-1', 'us-east-2', 'us-west-2', 'eu-west-1', 'eu-west-2', 'eu-west-3', 
+            'eu-central-1', 'eu-north-1', 'eu-south-2', 'ap-southeast-1', 'ap-southeast-2', 
+            'ap-southeast-3', 'ap-southeast-5', 'ap-northeast-1', 'ap-northeast-2', 'ap-east-1', 
+            'ap-south-1', 'ca-central-1', 'sa-east-1'
           ]
         - if: $[[ inputs.cloud-provider ]] == 'gcp'
           default: 'asia-southeast1'
@@ -37,9 +45,12 @@ spec:
     instance-type:
       description: "VPN server instance type"
       rules:
-        - if: $[[ inputs.cloud-provider ]] == 'aws'
+        - if: $[[ inputs.cloud-provider ]] == 'aws-ec2'
           default: 't2.micro'
           options: ['t2.micro', 't3.micro', 't2.small', 't3.small', 't2.medium', 't3.medium']
+        - if: $[[ inputs.cloud-provider ]] == 'aws-lightsail'
+          default: 'nano_3_0'
+          options: ['nano_3_0', 'micro_3_0', 'small_3_0', 'medium_3_0', 'large_3_0', 'xlarge_3_0', '2xlarge_3_0']
         - if: $[[ inputs.cloud-provider ]] == 'gcp'
           default: 'e2-micro'
           options: ['e2-micro', 'e2-small', 'e2-medium']
@@ -55,7 +66,8 @@ stages:
   - destroy
 
 variables:
-  AWS_SSH_USER: "ubuntu"
+  AWS_EC2_SSH_USER: "ubuntu"
+  AWS_LIGHTSAIL_SSH_USER: "ubuntu"
   GCP_SSH_USER: "vpnadmin"
   DO_SSH_USER: "root"
   PROVIDER: $[[ inputs.cloud-provider ]]

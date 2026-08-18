@@ -91,7 +91,8 @@ Configurable in the `install-tools` prepare job.
 
 ## Implemented Cloud Providers
 
-- AWS
+- AWS EC2
+- AWS Lightsail
 - GCP
 - DigitalOcean
 
@@ -109,8 +110,8 @@ Below are the required variables
 
 |Name|Description|Purpose|
 |---|---|---|
-|AWS_ACCESS_KEY|AWS access key|For AWS provider auth|
-|AWS_SECRET_KEY|AWS secret key|For AWS provider auth|
+|AWS_ACCESS_KEY|AWS access key|For AWS EC2 and AWS Lightsail provider auth|
+|AWS_SECRET_KEY|AWS secret key|For AWS EC2 and AWS Lightsail provider auth|
 |CI_PAT|Gitlab Personal Access Token|For Gitlab tfstate backend|
 |CI_USER|Gitlab username for PAT|For Gitlab tfstate backend|
 |DO_TOKEN|Digital Ocean access token|For DigitalOcean provider auth|

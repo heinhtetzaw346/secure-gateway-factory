@@ -1,0 +1,83 @@
+.aws-lightsail-rules: &aws-lightsail-rules
+  rules:
+  - if: '$PROVIDER == "aws-lightsail" && ($CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "api")'
+    when: manual
+
+.aws-lightsail-tofu-template:
+  <<: *aws-lightsail-rules
+  variables:
+    AWS_LIGHTSAIL_REGION: "${REGION}"
+    AWS_LIGHTSAIL_INSTANCE_TYPE: "${INSTANCE_TYPE}"
+    PROVIDER_VARS: "AWS_LIGHTSAIL_REGION,AWS_LIGHTSAIL_INSTANCE_TYPE,AWS_ACCESS_KEY,AWS_SECRET_KEY"
+
+aws-lightsail-provision:
+  environment:
+    name: ${ENVIRONMENT_NAME}
+    on_stop: aws-lightsail-tear-down
+  extends:
+    - .aws-lightsail-tofu-template
+    - .prepare-tofu-template
+    - .provision-tofu-template
+
+aws-lightsail-tear-down:
+  needs:
+    - job: aws-lightsail-provision
+      artifacts: false
+      optional: true
+  environment:
+    name: ${ENVIRONMENT_NAME}
+    action: stop
+  extends:
+    - .aws-lightsail-tofu-template
+    - .prepare-tofu-template
+    - .destroy-tofu-template
+
+aws-lightsail-outline-install:
+  needs:
+    - job: aws-lightsail-provision
+      artifacts: true
+      optional: false
+  <<: *aws-lightsail-rules
+  extends: 
+    - .outline-install-template
+    - .remote-access-template
+  variables:
+    SSH_USER: $AWS_LIGHTSAIL_SSH_USER
+
+aws-lightsail-outline-key-generate:
+  needs:
+    - job: aws-lightsail-outline-install
+      artifacts: true
+      optional: false
+    - job: aws-lightsail-provision
+      artifacts: true
+      optional: false
+  <<: *aws-lightsail-rules
+  extends: [ .outline-key-template ]
+
+aws-lightsail-ovpn-install:
+  needs:
+    - job: aws-lightsail-provision
+      artifacts: true
+      optional: false
+  <<: *aws-lightsail-rules
+  extends:
+    - .ovpn-install-template
+    - .remote-access-template
+  variables:
+    SSH_USER: $AWS_LIGHTSAIL_SSH_USER
+
+aws-lightsail-ovpn-key-generate:
+  needs:
+    - job: aws-lightsail-ovpn-install
+      artifacts: false
+      optional: false
+    - job: aws-lightsail-provision
+      artifacts: true
+      optional: false
+  <<: *aws-lightsail-rules
+  extends:
+    - .ovpn-key-template
+    - .remote-access-template
+  variables:
+    SSH_USER: $AWS_LIGHTSAIL_SSH_USER
