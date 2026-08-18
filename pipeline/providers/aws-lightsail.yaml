@@ -32,6 +32,20 @@ aws-lightsail-tear-down:
     - .prepare-tofu-template
     - .destroy-tofu-template
 
+aws-lightsail-install-tools:
+  needs:
+    - job: aws-lightsail-provision
+      artifacts: true
+      optional: false
+  rules:
+    - if: '$PROVIDER == "aws-lightsail" && ($CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "api")'
+      when: on_success
+  extends:
+    - .install-tools-template
+    - .remote-access-template
+  variables:
+    SSH_USER: $AWS_LIGHTSAIL_SSH_USER
+
 aws-lightsail-outline-install:
   needs:
     - job: aws-lightsail-provision
@@ -57,7 +71,7 @@ aws-lightsail-outline-key-generate:
 
 aws-lightsail-ovpn-install:
   needs:
-    - job: aws-lightsail-provision
+    - job: aws-lightsail-ovpn-install
       artifacts: true
       optional: false
   <<: *aws-lightsail-rules

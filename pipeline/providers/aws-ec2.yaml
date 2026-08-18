@@ -32,6 +32,20 @@ aws-ec2-tear-down:
     - .prepare-tofu-template
     - .destroy-tofu-template
 
+aws-ec2-install-tools:
+  needs:
+    - job: aws-ec2-provision
+      artifacts: true
+      optional: false
+  rules:
+    - if: '$PROVIDER == "aws-ec2" && ($CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "api")'
+      when: on_success
+  extends:
+    - .install-tools-template
+    - .remote-access-template
+  variables:
+    SSH_USER: $AWS_EC2_SSH_USER
+
 aws-ec2-outline-install:
   needs:
     - job: aws-ec2-provision
