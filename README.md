@@ -39,7 +39,7 @@ These are selected when triggering the pipeline via the Gitlab CI dropdown UI.
 
 |Variable|Default|Description|
 |---|---|---|
-|`cloud-provider`|`aws`|Cloud provider to use (`aws`, `gcp`, `do`)|
+|`cloud-provider`|`aws-ec2`|Cloud provider to use (`aws-ec2`, `aws-lightsail`, `gcp`, `do`)|
 |`region`|Provider-specific|Regional deployment target|
 |`instance-type`|Provider-specific|VPN server instance type|
 
@@ -49,7 +49,7 @@ Passed as OpenTofu variables per provider. These have defaults in the tofu confi
 
 |Variable|Provider|Default|Description|
 |---|---|---|---|
-|`AWS_VPC_CIDR`|AWS|`10.255.255.0/24`|CIDR block for the VPN VPC|
+|`AWS_VPC_CIDR`|AWS EC2|`10.255.255.0/24`|CIDR block for the VPN VPC|
 |`GCP_NETWORK_TIER`|GCP|`STANDARD`|Network tier for the GCP instance|
 |`DO_IMPORT_SSH_KEY`|DO|`true`|Whether to import the SSH key into DigitalOcean|
 
@@ -59,19 +59,27 @@ Defined globally in `.gitlab-ci.yml` and used by jobs that SSH into provisioned 
 
 |Variable|Default|Description|
 |---|---|---|
-|`AWS_SSH_USER`|`ubuntu`|SSH user for AWS instances|
+|`AWS_EC2_SSH_USER`|`ubuntu`|SSH user for AWS EC2 instances|
+|`AWS_LIGHTSAIL_SSH_USER`|`ubuntu`|SSH user for AWS Lightsail instances|
 |`GCP_SSH_USER`|`vpnadmin`|SSH user for GCP instances|
 |`DO_SSH_USER`|`root`|SSH user for DigitalOcean instances|
 
-### OpenVPN Key Options
+### OpenVPN Network & Key Options
 
 Configurable when generating OpenVPN client keys in the `ovpn-key-generate` job.
 
 |Variable|Default|Description|
 |---|---|---|
 |`KEY_NAMES`|`ovpn-${CI_JOB_ID}`|Comma-separated list of client key names to generate|
-|`OVPN_SPLIT_TUNNEL`|`false`|When `true`, adds routes to bypass the VPN for private network ranges (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16)|
-|`OVPN_LOCAL_DNS`|`false`|When `true`, ignores DNS options pushed by the server, allowing clients to use their local DNS|
+|`OVPN_SPLIT_TUNNEL`|`false`|Controls routing mode for client configuration (`false` = Full Tunnel, `true` = Split Tunnel)|
+|`OVPN_LOCAL_DNS`|`false`|Controls DNS configuration (`false` = Use server DNS, `true` = Retain local client DNS)|
+
+#### OpenVPN Network Modes
+
+- **Full Tunnel Mode (`OVPN_SPLIT_TUNNEL=false`)**: Default mode. All network traffic from the client is routed through the OpenVPN gateway.
+- **Split Tunnel Mode (`OVPN_SPLIT_TUNNEL=true`)**: Adds bypass routes (`route 10.0.0.0`, `route 172.16.0.0`, `route 192.168.0.0` via `net_gateway`) into the `.ovpn` client profile so private LAN traffic bypasses the VPN tunnel.
+- **Local DNS Option (`OVPN_LOCAL_DNS=true`)**: Appends `pull-filter ignore "dhcp-option DNS"` to the `.ovpn` client profile so the client ignores DNS servers pushed by OpenVPN and continues using its local DNS resolver.
+
 
 ### Outline Key Options
 
@@ -87,7 +95,7 @@ Configurable in the `install-tools` prepare job.
 
 |Variable|Default|Description|
 |---|---|---|
-|`INSTALL_TOOLS`|`true`|Whether to install shared tools (e.g. vnstat) on the instance|
+|`INSTALL_TOOLS`|`true`|Whether to install shared tools (e.g. vnstat, btop) on the instance|
 
 ## Implemented Cloud Providers
 
