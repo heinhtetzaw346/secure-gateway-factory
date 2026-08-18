@@ -71,7 +71,7 @@ aws-lightsail-outline-key-generate:
 
 aws-lightsail-ovpn-install:
   needs:
-    - job: aws-lightsail-ovpn-install
+    - job: aws-lightsail-provision
       artifacts: true
       optional: false
   <<: *aws-lightsail-rules
