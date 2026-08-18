@@ -1,0 +1,83 @@
+.aws-ec2-rules: &aws-ec2-rules
+  rules:
+  - if: '$PROVIDER == "aws-ec2" && ($CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "api")'
+    when: manual
+
+.aws-ec2-tofu-template:
+  <<: *aws-ec2-rules
+  variables:
+    AWS_EC2_REGION: "${REGION}"
+    AWS_EC2_INSTANCE_TYPE: "${INSTANCE_TYPE}"
+    PROVIDER_VARS: "AWS_EC2_REGION,AWS_EC2_INSTANCE_TYPE,AWS_ACCESS_KEY,AWS_SECRET_KEY,AWS_VPC_CIDR"
+
+aws-ec2-provision:
+  environment:
+    name: ${ENVIRONMENT_NAME}
+    on_stop: aws-ec2-tear-down
+  extends:
+    - .aws-ec2-tofu-template
+    - .prepare-tofu-template
+    - .provision-tofu-template
+
+aws-ec2-tear-down:
+  needs:
+    - job: aws-ec2-provision
+      artifacts: false
+      optional: true
+  environment:
+    name: ${ENVIRONMENT_NAME}
+    action: stop
+  extends:
+    - .aws-ec2-tofu-template
+    - .prepare-tofu-template
+    - .destroy-tofu-template
+
+aws-ec2-outline-install:
+  needs:
+    - job: aws-ec2-provision
+      artifacts: true
+      optional: false
+  <<: *aws-ec2-rules
+  extends: 
+    - .outline-install-template
+    - .remote-access-template
+  variables:
+    SSH_USER: $AWS_EC2_SSH_USER
+
+aws-ec2-outline-key-generate:
+  needs:
+    - job: aws-ec2-outline-install
+      artifacts: true
+      optional: false
+    - job: aws-ec2-provision
+      artifacts: true
+      optional: false
+  <<: *aws-ec2-rules
+  extends: [ .outline-key-template ]
+
+aws-ec2-ovpn-install:
+  needs:
+    - job: aws-ec2-provision
+      artifacts: true
+      optional: false
+  <<: *aws-ec2-rules
+  extends:
+    - .ovpn-install-template
+    - .remote-access-template
+  variables:
+    SSH_USER: $AWS_EC2_SSH_USER
+
+aws-ec2-ovpn-key-generate:
+  needs:
+    - job: aws-ec2-ovpn-install
+      artifacts: false
+      optional: false
+    - job: aws-ec2-provision
+      artifacts: true
+      optional: false
+  <<: *aws-ec2-rules
+  extends:
+    - .ovpn-key-template
+    - .remote-access-template
+  variables:
+    SSH_USER: $AWS_EC2_SSH_USER
