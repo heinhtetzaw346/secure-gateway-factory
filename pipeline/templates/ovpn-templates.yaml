@@ -1,7 +1,7 @@
 .ovpn-install-template: 
   stage: install
   script:
-    - OVPN_PORT=$(jq -r '.values.outputs.randomized_ports.value[2]' ${INFO_FILE})
+    - OVPN_PORT=$(jq -r '.values.outputs.randomized_ports.value[1]' ${INFO_FILE})
     - echo "Sending script file to remote instance"
     - scp scripts/ovpn/install-ovpn.sh instance:.
     - ssh instance "
