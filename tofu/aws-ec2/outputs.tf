@@ -9,3 +9,7 @@ output "randomized_ports" {
     random_shuffle.vpn_ports.result[2]
   ]
 }
+
+output "randomized_uuid" {
+  value = random_id.suffix.hex
+}
