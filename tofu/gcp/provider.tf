@@ -10,5 +10,5 @@ terraform {
 provider "google" {
   project = var.project
   region = var.region
-  credentials = var.credentials
+  credentials = var.credentials != "" && var.credentials != null ? var.credentials : null
 }

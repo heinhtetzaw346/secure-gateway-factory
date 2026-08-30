@@ -42,7 +42,7 @@ locals {
 //Shuffle the list and get 3 results
 resource "random_shuffle" "vpn_ports" {
   input        = sensitive(local.port_strings)
-  result_count = 3
+  result_count = 2
 
   keepers = {
     seed = random_uuid.seed.result
@@ -117,11 +117,11 @@ resource "google_compute_firewall" "vpn-factory-firewall" {
 
   allow {
     protocol = "tcp"
-    ports = slice(random_shuffle.vpn_ports.result, 0, 3)
+    ports = slice(random_shuffle.vpn_ports.result, 0, 2)
   }
 
   allow {
     protocol = "udp"
-    ports = slice(random_shuffle.vpn_ports.result, 0, 3)
+    ports = slice(random_shuffle.vpn_ports.result, 0, 2)
   }
 }
