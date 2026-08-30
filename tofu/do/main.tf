@@ -25,7 +25,7 @@ locals {
 //Shuffle the list and get 3 results
 resource "random_shuffle" "vpn_ports" {
   input        = sensitive(local.port_strings)
-  result_count = 3
+  result_count = 2
 
   keepers = {
     seed = random_uuid.seed.result
@@ -70,7 +70,7 @@ resource "digitalocean_firewall" "vpn-factory-firewall" {
 
   // VPN ports
   dynamic "inbound_rule" {
-    for_each = setproduct(slice(random_shuffle.vpn_ports.result, 0, 3), ["tcp", "udp"])
+    for_each = setproduct(slice(random_shuffle.vpn_ports.result, 0, 2), ["tcp", "udp"])
     content {
       port_range = inbound_rule.value[0]
       protocol = inbound_rule.value[1]

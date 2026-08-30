@@ -6,7 +6,6 @@ INSTALL_FILE="$HOME/outline/install_server.sh"
 API_FILE="$HOME/outline/outline-api.json"
 
 echo "==> [CONFIG] Checking required variables..."
-: "${API_PORT:?Error: API_PORT environment variable is not set}"
 : "${KEYS_PORT:?Error: KEYS_PORT environment variable is not set}"
 
 echo "==> [DOWNLOAD] Fetching Outline installation script..."
@@ -17,7 +16,7 @@ fi
 
 echo "==> [INSTALL] Running Outline installer (this may take a minute)..."
 
-yes | sudo bash $INSTALL_FILE --api-port "$API_PORT" --keys-port "$KEYS_PORT" >> $LOG_FILE
+yes | sudo bash $INSTALL_FILE --keys-port "$KEYS_PORT" >> $LOG_FILE
 
 if ! [ "$?" ]; then
     echo "[ERROR] Installation failed... Please check $LOG_FILE"
