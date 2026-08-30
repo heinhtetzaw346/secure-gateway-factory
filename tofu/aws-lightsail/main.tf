@@ -25,7 +25,7 @@ locals {
 //Shuffle the list and get 3 results
 resource "random_shuffle" "vpn_ports" {
   input        = sensitive(local.port_strings)
-  result_count = 3
+  result_count = 2
 
   keepers = {
     seed = random_uuid.seed.result
