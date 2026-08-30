@@ -67,7 +67,11 @@ aws-ec2-outline-key-generate:
       artifacts: true
       optional: false
   <<: *aws-ec2-rules
-  extends: [ .outline-key-template ]
+  extends:
+    - .outline-key-template
+    - .remote-access-template
+  variables:
+    SSH_USER: $AWS_EC2_SSH_USER
 
 aws-ec2-ovpn-install:
   needs:

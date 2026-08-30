@@ -67,7 +67,11 @@ aws-lightsail-outline-key-generate:
       artifacts: true
       optional: false
   <<: *aws-lightsail-rules
-  extends: [ .outline-key-template ]
+  extends:
+    - .outline-key-template
+    - .remote-access-template
+  variables:
+    SSH_USER: $AWS_LIGHTSAIL_SSH_USER
 
 aws-lightsail-ovpn-install:
   needs:

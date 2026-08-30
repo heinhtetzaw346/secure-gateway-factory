@@ -67,7 +67,11 @@ gcp-outline-key-generate:
       artifacts: true
       optional: false
   <<: *gcp-rules
-  extends: [ .outline-key-template ]
+  extends:
+    - .outline-key-template
+    - .remote-access-template
+  variables:
+    SSH_USER: $GCP_SSH_USER
 
 gcp-ovpn-install:
   needs:

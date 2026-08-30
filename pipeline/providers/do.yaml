@@ -67,7 +67,11 @@ do-outline-key-generate:
       artifacts: true
       optional: false
   <<: *do-rules
-  extends: [ .outline-key-template ]
+  extends:
+    - .outline-key-template
+    - .remote-access-template
+  variables:
+    SSH_USER: $DO_SSH_USER
 
 do-ovpn-install:
   needs:

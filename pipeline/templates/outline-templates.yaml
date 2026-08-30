@@ -25,12 +25,17 @@
   variables:
     KEY_NAMES: "outline-${CI_JOB_ID}"
   script:
-    - API_URL=$(jq -r '.apiUrl' ${CI_PROJECT_DIR}/outline/outline-api.json )
+    - echo "Creating keys/outline"
+    - mkdir -p ${CI_PROJECT_DIR}/keys/outline
+    - echo "Sending script file to remote instance"
+    - scp scripts/outline/get-outline-key.sh instance:.
     - IFS=',' read -ra KEYS <<< "$KEY_NAMES"
     - |
       for KEY in "${KEYS[@]}"; do
         echo "Generating key for $KEY"
-        API_URL="$API_URL" KEY_NAME="$KEY" bash scripts/outline/get-outline-key.sh
+        ssh instance "KEY_NAME=$KEY bash get-outline-key.sh"
+        echo "Getting the key file from remote instance"
+        scp instance:~/keys/outline/$KEY.json ${CI_PROJECT_DIR}/keys/outline/$KEY.json
       done
     - INFO_FILE="${CI_PROJECT_DIR}/tofu/${PROVIDER}/${CI_PIPELINE_ID}.json"
     - INSTANCE_IP=$(jq -r '.values.outputs.instance_ip.value' ${INFO_FILE})
@@ -64,6 +69,8 @@
         sleep 2
       done
     - echo "Successfully sent keys to telegram"
+    - echo "Cleaning script file from remote instance"
+    - ssh instance "rm get-outline-key.sh"
   artifacts:
     paths:
       - ${CI_PROJECT_DIR}/keys/outline
